@@ -156,6 +156,8 @@ architecture rtl of top is
   signal dir_blue            : std_logic_vector(7 downto 0);
   signal dir_pixel_column    : std_logic_vector(10 downto 0);
   signal dir_pixel_row       : std_logic_vector(10 downto 0);
+  
+  signal color_bar			  : std_logic_vector(23 downto 0);
 
 begin
 
@@ -250,6 +252,19 @@ begin
   --dir_red
   --dir_green
   --dir_blue
+  
+  color_bar <= x"ffffff" when ((dir_pixel_column >= 0)   and (dir_pixel_column < 80))  else	-- white
+					x"ffff00" when ((dir_pixel_column >= 80)  and (dir_pixel_column < 160)) else	-- yellow
+					x"00ffff" when ((dir_pixel_column >= 160) and (dir_pixel_column < 240)) else	-- cyan
+					x"00ff00" when ((dir_pixel_column >= 240) and (dir_pixel_column < 320)) else	-- green
+					x"ff00ff" when ((dir_pixel_column >= 320) and (dir_pixel_column < 400)) else	-- magenta
+					x"ff0000" when ((dir_pixel_column >= 400) and (dir_pixel_column < 480)) else	-- red
+					x"0000ff" when ((dir_pixel_column >= 480) and (dir_pixel_column < 560)) else	-- blue
+					x"000000";																							-- black
+					
+  dir_red   <= color_bar(23 downto 16);             
+  dir_green <= color_bar(15 downto 8);           
+  dir_blue  <= color_bar(7 downto 0);
  
   -- koristeci signale realizovati logiku koja pise po TXT_MEM
   --char_address
