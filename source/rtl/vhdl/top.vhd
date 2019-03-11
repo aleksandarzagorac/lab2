@@ -158,6 +158,7 @@ architecture rtl of top is
   signal dir_pixel_row       : std_logic_vector(10 downto 0);
   
   signal color_bar			  : std_logic_vector(23 downto 0);
+  
 
 begin
 
@@ -170,8 +171,8 @@ begin
   graphics_lenght <= conv_std_logic_vector(MEM_SIZE*8*8, GRAPH_MEM_ADDR_WIDTH);
   
   -- removed to inputs pin
-  direct_mode <= '1';
-  display_mode     <= "10";  -- 01 - text mode, 10 - graphics mode, 11 - text & graphics
+  direct_mode <= '0';
+  display_mode     <= "01";  -- 01 - text mode, 10 - graphics mode, 11 - text & graphics
   
   font_size        <= x"1";
   show_frame       <= '1';
@@ -271,6 +272,49 @@ begin
   --char_value
   --char_we
   
+	char_we <= '1'; 
+	
+	process(pix_clock_s) begin 
+		if rising_edge(pix_clock_s) then 
+			if(char_address < 4800) then 
+				char_address <= char_address +1;
+			else
+				char_address <= (others => '0');
+			end if;			
+		end if;
+	end process;
+	
+	-- M 13
+	-- A 1
+	-- R 18
+	-- I 9
+	-- N 14
+	-- L 12
+	-- E 5
+	-- K 11
+	-- S 19
+	-- D 4
+	-- space 32 
+
+	char_value <= 	"001101" when char_address = x"00000230" else	-- M
+						"000001" when char_address = x"00000231" else	-- A
+						"010010" when char_address = x"00000232" else	-- R
+						"001001" when char_address = x"00000233" else	-- I
+						"001110" when char_address = x"00000234" else	-- N
+						"000001" when char_address = x"00000235" else	-- A
+						"100000" when char_address = x"00000236" else	-- SPACE
+						"000001" when char_address = x"00000237" else	-- A
+						"001100" when char_address = x"00000238" else	-- L
+						"000101" when char_address = x"00000239" else 	-- E
+						"001011" when char_address = x"0000023A" else 	-- K
+						"010011" when char_address = x"0000023B" else 	-- S
+						"000001" when char_address = x"0000023C" else 	-- A
+						"001110" when char_address = x"0000023D" else 	-- N
+						"000100" when char_address = x"0000023E" else	-- D
+						"000001" when char_address = x"0000023F" else	-- A
+						"010010" when char_address = x"00000240" else 	-- R
+						"100000";
+						
   -- koristeci signale realizovati logiku koja pise po GRAPH_MEM
   --pixel_address
   --pixel_value
